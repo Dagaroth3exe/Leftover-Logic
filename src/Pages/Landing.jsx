@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Logo from '../assets/Logo.png'
+import MagicButton from '../Components/MagicButton'
 
 export default function Landing() {
   const [input, setInput] = useState("")
@@ -14,23 +15,40 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-blue-200 flex items-center justify-center flex-col">
-      <img src={Logo} alt="Company Logo" 
-      style={{width :"900px", transform : "translateY(-130px)", }}
+      <img
+        src={Logo}
+        alt="Company Logo"
+        className="pointer-events-none"
+        style={{ width: "900px", transform: "translateY(-130px)" }}
       />
 
-      <input
-        type="text"
-        placeholder="e.g., half a lemon, stale bread, milk..."
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        onKeyDown={addIngredients}
-        className="p-2 rounded-full w-[600px] h-[50px] -translate-y-[150px]"
-      />
-
-      <div className="mt-4 space-y-2">
-        {ingredients.map((item, index) => (
-          <div key={index} className="px-3 py-1 bg-white rounded shadow-sm">{item}</div>
-        ))}
+      <div className="relative w-[600px] -translate-y-[150px]">
+        <input
+          type="text"
+          placeholder="e.g., half a lemon, stale bread, milk..."
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={addIngredients}
+          className="
+            px-6 py-2 rounded-full
+            w-full h-[50px]
+            font-outfit placeholder-gray-500
+            pr-36
+          "
+        />
+        <div className="absolute right-2 top-1/2 -translate-y-1/2 z-20">
+          <MagicButton
+            onClick={() => {
+              if (input.trim() !== '') {
+                setIngredients((prev) => [...prev, input.trim()])
+                setInput('')
+              }
+            }}
+          >
+            <span>Work Your Magic</span>
+          </MagicButton>
+        </div>
+        
       </div>
     </div>
   )

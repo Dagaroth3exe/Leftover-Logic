@@ -1,9 +1,17 @@
+/* Import Outfit font from Google Fonts (must appear before other rules) */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 * {
-  margin: 10;
-  padding: 10;
-  box-sizing: border-box; /* Makes sizing elements much easier */
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Apply the Outfit font globally so it's visible on all pages */
+html, body {
+  font-family: 'Outfit', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }

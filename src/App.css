@@ -1,3 +1,7 @@
+body{
+    font-family: 'Outfit', sans-serif;
+}
+
 /* Fade-in animation for images and other elements */
 .fade-in {
 	opacity: 0;
