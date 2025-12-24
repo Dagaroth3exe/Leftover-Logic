@@ -1,11 +1,11 @@
 import './MagicButton.css'
 
-export default function MagicButton({ children, onClick }) {
+export default function MagicButton({ children, onClick, type = 'button' }) {
   return (
     <button
       onClick={onClick}
       className="magic-btn"
-      type="button"
+      type={type}
     >
       {children}
     </button>

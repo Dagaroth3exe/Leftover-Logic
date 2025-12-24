@@ -3,6 +3,7 @@ import './App.css'
 import { Routes, Route } from 'react-router-dom'
 import Landing from './Pages/Landing'
 import RecipePage from './Pages/RecipePage'
+import LoadingScreen from './Pages/LoadingSceen'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -12,6 +13,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/Recipe" element={<RecipePage/>}/>
+        <Route path="/Loading" element={<LoadingScreen/>}/>
       </Routes>
     </>
   )

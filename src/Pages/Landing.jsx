@@ -10,17 +10,24 @@ export default function Landing() {
   const [input, setInput] = useState("")
   const [ingredients, setIngredients] = useState([])
 
-  const addIngredients = (e) => {
-    if (e.key === "Enter" && input.trim() !== "") {
-      setIngredients((prev)=>{
-        const updated = [...prev, input.trim()];
-        console.log("Current Ingredients List: ", updated);
-        return updated;
-      })
-      
-      setInput("")
-    }
-  }
+  const[loading, setLoading] = useState(false)
+
+  const handleSubmit = (e) =>{
+    e.preventDefault();
+
+    if (input.trim()=== "") return;
+
+    const finalIngredients = [...ingredients, input.trim()];
+
+    console.log("Final Ingredients", finalIngredients);
+    setIngredients(finalIngredients);
+
+    setInput("");
+
+    navigate("/Recipe",{
+      state:{ingredients : finalIngredients},
+    });
+  };
 
   const handleNavigate = () =>{
     const finalIngredients = input.trim() !=="" //check if the input is empty
@@ -61,30 +68,28 @@ export default function Landing() {
       </div>
 
       <div className="relative w-[600px] -translate-y-[150px]">
-        <input
-          type="text"
-          placeholder="e.g., half a lemon, stale bread, milk..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={addIngredients}
-          className="
-            px-6 py-2 rounded-full
-            w-full h-[50px]
-            font-outfit placeholder-gray-500
-            pr-36
-            opacity-100
-            z-20
-            border border-black
-          "
-        />
-        <div className="absolute right-2 top-1/2 -translate-y-1/2 z-20">
-          <MagicButton
-            onClick={() => navigate("/Recipe")}
-          >
-            <span>Work Your Magic</span>
-          </MagicButton>
-        </div>
-        
+        <form onSubmit={handleSubmit} className="w-full">
+          <input
+            type="text"
+            placeholder="e.g., half a lemon, stale bread, milk..."
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            className="
+              px-6 py-2 rounded-full
+              w-full h-[50px]
+              font-outfit placeholder-gray-500
+              pr-36
+              opacity-100
+              z-20
+              border border-black
+            "
+          />
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 z-20">
+            <MagicButton type="submit">
+              <span>Work Your Magic</span>
+            </MagicButton>
+          </div>
+        </form>
       </div>
     </div>
   )
