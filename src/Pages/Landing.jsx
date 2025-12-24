@@ -12,9 +12,23 @@ export default function Landing() {
 
   const addIngredients = (e) => {
     if (e.key === "Enter" && input.trim() !== "") {
-      setIngredients((prev) => [...prev, input.trim()])
+      setIngredients((prev)=>{
+        const updated = [...prev, input.trim()];
+        console.log("Current Ingredients List: ", updated);
+        return updated;
+      })
+      
       setInput("")
     }
+  }
+
+  const handleNavigate = () =>{
+    const finalIngredients = input.trim() !=="" //check if the input is empty
+    ?[...ingredients, input.trim()] //prints a new list with updated elements
+    :ingredients; //else return the original list
+
+
+    navigate("/Recipe", {state:{ingredients : finalIngredients}})
   }
 
   return (

@@ -22,7 +22,7 @@ const RecipePage =()=>{
                     <div className="h-36 w-72 bg-[#000A4B] p-10 rounded-2xl -translate-y-[105px]"></div>
                 </div>
                 <div className="RecipeCard3 bg-[#E3FF31] h-96 w-72 sm:w-80 rounded-2xl shadow-xl transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-2xl flex items-center justify-center">
-                    <div className="h-36 w-72 bg-[#464B00] p-10 rounded-2xl -translate-y-[105px]">Some Recipe</div>
+                    <div className="h-36 w-72 bg-[#464B00] p-10 rounded-2xl -translate-y-[105px]"></div>
                 </div>
             </div>
             
