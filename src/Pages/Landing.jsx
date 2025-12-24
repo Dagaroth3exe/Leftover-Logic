@@ -3,8 +3,10 @@ import Logo from '../assets/Logo.png'
 import MagicButton from '../Components/MagicButton'
 import Tiffins from '../assets/Tiffins.png'
 import Snowfall from "react-snowfall"
+import { useNavigate } from "react-router-dom";
 
 export default function Landing() {
+  const navigate = useNavigate()
   const [input, setInput] = useState("")
   const [ingredients, setIngredients] = useState([])
 
@@ -63,12 +65,7 @@ export default function Landing() {
         />
         <div className="absolute right-2 top-1/2 -translate-y-1/2 z-20">
           <MagicButton
-            onClick={() => {
-              if (input.trim() !== '') {
-                setIngredients((prev) => [...prev, input.trim()])
-                setInput('')
-              }
-            }}
+            onClick={() => navigate("/Recipe")}
           >
             <span>Work Your Magic</span>
           </MagicButton>
