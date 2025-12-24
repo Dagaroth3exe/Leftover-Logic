@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Logo from '../assets/Logo.png'
 import MagicButton from '../Components/MagicButton'
+import Tiffins from '../assets/Tiffins.png'
 
 export default function Landing() {
   const [input, setInput] = useState("")
@@ -23,6 +24,10 @@ export default function Landing() {
       />
 
       <div className="relative w-[600px] -translate-y-[150px]">
+        <img src={Tiffins} alt='Tiffins Decor' className="absolute left-1/2 top-1/2 -translate-x-[400px] -translate-y-[110px] w-72  pointer-events-none z-10 -rotate-12"/>
+      </div>
+
+      <div className="relative w-[600px] -translate-y-[150px]">
         <input
           type="text"
           placeholder="e.g., half a lemon, stale bread, milk..."
@@ -34,6 +39,9 @@ export default function Landing() {
             w-full h-[50px]
             font-outfit placeholder-gray-500
             pr-36
+            opacity-100
+            z-20
+            border border-black
           "
         />
         <div className="absolute right-2 top-1/2 -translate-y-1/2 z-20">
