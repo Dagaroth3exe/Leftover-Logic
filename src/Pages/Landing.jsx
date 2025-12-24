@@ -2,6 +2,7 @@ import { useState } from 'react'
 import Logo from '../assets/Logo.png'
 import MagicButton from '../Components/MagicButton'
 import Tiffins from '../assets/Tiffins.png'
+import Snowfall from "react-snowfall"
 
 export default function Landing() {
   const [input, setInput] = useState("")
@@ -15,7 +16,23 @@ export default function Landing() {
   }
 
   return (
+
     <div className="min-h-screen bg-blue-200 flex items-center justify-center flex-col">
+      <Snowfall
+        style={{
+          position: "fixed",
+          width: "100vw",
+          height: "100vh",
+          top: 0,
+          left: 0,
+          pointerEvents: "none",
+          zIndex: 50,
+        }}
+        snowflakeCount={200}
+        color="#ffffff"
+      />
+
+      
       <img
         src={Logo}
         alt="Company Logo"
