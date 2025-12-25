@@ -1,5 +1,11 @@
 import React from "react";
 import Logo from "../assets/Logo.png"
+import { useLocation } from "react-router";
+import { FakeRecipes } from "../utils/FakeRecipes";
+
+const location = useLocation();
+const ingredients = location.state?.ingredients || [];
+const recipes = FakeRecipes(ingredients);
 
 const RecipePage =()=>{
     return(
