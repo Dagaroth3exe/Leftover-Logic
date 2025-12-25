@@ -1,45 +1,46 @@
-import { useState } from 'react'
-import Logo from '../assets/Logo.png'
-import MagicButton from '../Components/MagicButton'
-import Tiffins from '../assets/Tiffins.png'
-import Snowfall from "react-snowfall"
+import { useState } from "react";
+import Logo from "../assets/Logo.png";
+import MagicButton from "../Components/MagicButton";
+import Tiffins from "../assets/Tiffins.png";
+import Snowfall from "react-snowfall";
 import { useNavigate } from "react-router-dom";
+import LinearBuffer from "../Components/LinearBuffer";
+import LoadingScreen from "./LoadingSceen";
 
 export default function Landing() {
-  const navigate = useNavigate()
-  const [input, setInput] = useState("")
-  const [ingredients, setIngredients] = useState([])
+  const navigate = useNavigate();
 
-  const[loading, setLoading] = useState(false)
+  const [input, setInput] = useState("");
+  const [ingredients, setIngredients] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) =>{
+  const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (input.trim()=== "") return;
+    if (input.trim() === "") return;
 
     const finalIngredients = [...ingredients, input.trim()];
 
-    console.log("Final Ingredients", finalIngredients);
+    console.log("Final Ingredients:", finalIngredients);
+
     setIngredients(finalIngredients);
-
     setInput("");
+    setLoading(true); // 👈 show loading
+  };
 
-    navigate("/Recipe",{
-      state:{ingredients : finalIngredients},
+  // 👇 THIS is what Loading will call
+  const handleLoadingComplete = () => {
+    navigate("/Recipe", {
+      state: { ingredients },
     });
   };
 
-  const handleNavigate = () =>{
-    const finalIngredients = input.trim() !=="" //check if the input is empty
-    ?[...ingredients, input.trim()] //prints a new list with updated elements
-    :ingredients; //else return the original list
-
-
-    navigate("/Recipe", {state:{ingredients : finalIngredients}})
+  // ✅ EARLY RETURN (IMPORTANT)
+  if (loading) {
+    return <LoadingScreen onComplete={handleLoadingComplete} />;
   }
 
   return (
-
     <div className="min-h-screen bg-blue-200 flex items-center justify-center flex-col">
       <Snowfall
         style={{
@@ -55,7 +56,6 @@ export default function Landing() {
         color="#ffffff"
       />
 
-      
       <img
         src={Logo}
         alt="Company Logo"
@@ -64,7 +64,11 @@ export default function Landing() {
       />
 
       <div className="relative w-[600px] -translate-y-[150px]">
-        <img src={Tiffins} alt='Tiffins Decor' className="absolute left-1/2 top-1/2 -translate-x-[400px] -translate-y-[110px] w-72  pointer-events-none z-10 -rotate-12"/>
+        <img
+          src={Tiffins}
+          alt="Tiffins Decor"
+          className="absolute left-1/2 top-1/2 -translate-x-[400px] -translate-y-[110px] w-72 pointer-events-none z-10 -rotate-12"
+        />
       </div>
 
       <div className="relative w-[600px] -translate-y-[150px]">
@@ -74,16 +78,9 @@ export default function Landing() {
             placeholder="e.g., half a lemon, stale bread, milk..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            className="
-              px-6 py-2 rounded-full
-              w-full h-[50px]
-              font-outfit placeholder-gray-500
-              pr-36
-              opacity-100
-              z-20
-              border border-black
-            "
+            className="px-6 py-2 rounded-full w-full h-[50px] border border-black pr-36"
           />
+
           <div className="absolute right-2 top-1/2 -translate-y-1/2 z-20">
             <MagicButton type="submit">
               <span>Work Your Magic</span>
@@ -92,5 +89,5 @@ export default function Landing() {
         </form>
       </div>
     </div>
-  )
+  );
 }

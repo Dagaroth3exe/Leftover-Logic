@@ -1,8 +1,8 @@
 import React from "react";
 import Logo from '../assets/Logo.png'
-import ProgressBar from "../Components/ProgressBar";
+import LinearBuffer from "../Components/LinearBuffer";
 
-const LoadingScreen =()=>{
+const LoadingScreen =({ onComplete })=>{
     return(
         <>
         <div className="min-h-screen bg-blue-200 flex items-center justify-center flex-col">
@@ -12,8 +12,8 @@ const LoadingScreen =()=>{
                     className="pointer-events-none"
                     style={{ width: "900px", transform: "translateY(-130px)" }}
             />
-            <h1 className="font-semibold">IS COOKING</h1>
-            <ProgressBar/>
+            <h1 className="font-semibold">IS COOKING...</h1>
+            <LinearBuffer onComplete={onComplete} />
 
         </div>
         </>

@@ -13,7 +13,6 @@ function App() {
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/Recipe" element={<RecipePage/>}/>
-        <Route path="/Loading" element={<LoadingScreen/>}/>
       </Routes>
     </>
   )
