@@ -3,11 +3,15 @@ import Logo from "../assets/Logo.png"
 import { useLocation } from "react-router";
 import { FakeRecipes } from "../utils/FakeRecipes";
 
-const location = useLocation();
-const ingredients = location.state?.ingredients || [];
-const recipes = FakeRecipes(ingredients);
+
 
 const RecipePage =()=>{
+
+    const location = useLocation();
+    const ingredients = location.state?.ingredients || [];
+    const recipes = FakeRecipes(ingredients);
+
+
     return(
         <>
         <div className="min-h-screen bg-blue-200 flex items-center justify-center flex-col">
