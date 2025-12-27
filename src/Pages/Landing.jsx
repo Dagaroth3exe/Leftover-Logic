@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import LinearBuffer from "../Components/LinearBuffer";
 import LoadingScreen from "./LoadingSceen";
 
+
 export default function Landing() {
   const navigate = useNavigate();
 
@@ -25,7 +26,7 @@ export default function Landing() {
 
     setIngredients(finalIngredients);
     setInput("");
-    setLoading(true); // 👈 show loading
+    setLoading(true); 
   };
 
   // 👇 THIS is what Loading will call
@@ -35,7 +36,7 @@ export default function Landing() {
     });
   };
 
-  // ✅ EARLY RETURN (IMPORTANT)
+  
   if (loading) {
     return <LoadingScreen onComplete={handleLoadingComplete} />;
   }
@@ -88,6 +89,7 @@ export default function Landing() {
           </div>
         </form>
       </div>
+     
     </div>
   );
 }

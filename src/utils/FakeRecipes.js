@@ -2,14 +2,14 @@ export function FakeRecipes(ingredients){
     return[
         {
             id:1,
-            title: `${ingredients[0] || "simple"} Delight`,
+            title: "Parmesaan Garlic Delight",
             time : "15 mins",
             difficulty : "Easy",
             description : `a quick recipe using ${ingredients.join(",")}.`,
         },
         {
             id:2,
-            title: `${ingredients[1] || "Homestyle"} Delight`,
+            title: "Lemon Corainder Potato",
             time : "15 mins",
             difficulty : "Easy",
             description : `a quick recipe using ${ingredients.join(",")}.`,
