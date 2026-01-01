@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Logo from "../assets/Logo.png";
 import { useLocation } from "react-router";
-// import { FakeRecipes } from "../utils/FakeRecipes"; // ❌ No longer needed
-import Button from "@mui/material/Button"; // Optional, usually requires install
+
+import Button from "@mui/material/Button"; 
 
 const RecipePage = () => {
   const location = useLocation();
@@ -80,7 +80,8 @@ const RecipePage = () => {
         <div className="mb-16 cardContainer flex flex-col sm:flex-row flex-wrap justify-center gap-7 ">
           {/* CARD 1 */}
           <div className="RecipeCard1 bg-[#FF3131] h-96 w-72 sm:w-80 rounded-2xl shadow-xl transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-2xl flex items-center justify-center relative">
-            <div className="h-36 w-72 bg-[#4B0000] p-3 rounded-2xl -translate-y-[105px] flex items-start justify-start">
+
+            <div className="absolute -translate-x-1/2 left-1/2 h-[70%] w-[90%] top-4 bg-[#4B0000] p-3 rounded-2xl flex items-start justify-start">
               <h1 className="font-semibold text-white mt-2 ml-2">
                 {recipes[0]?.title}
               </h1>
@@ -91,8 +92,8 @@ const RecipePage = () => {
           </div>
 
           {/* CARD 2 */}
-          <div className="RecipeCard2 bg-[#3179FF] h-96 w-72 sm:w-80 rounded-2xl shadow-xl transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-2xl flex flex-col items-center justify-center relative">
-            <div className="h-36 w-72 bg-[#000A4B] p-3 rounded-2xl -translate-y-[105px] flex items-start justify-start">
+          <div className="RecipeCard2 bg-[#3179FF] h-96 w-72 sm:w-80 rounded-2xl shadow-xl transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-2xl flex flex-col items-center justify-center relative over">
+            <div className="absolute left-1/2 -translate-x-1/2 h-[70%] w-[90%] top-4 bg-[#000A4B] p-3 rounded-2xl  flex items-start justify-start ">
               <h1 className="font-semibold text-white mt-2 ml-2">
                 {recipes[1]?.title}
               </h1>
@@ -104,7 +105,7 @@ const RecipePage = () => {
 
           {/* CARD 3 */}
           <div className="RecipeCard3 bg-[#E3FF31] h-96 w-72 sm:w-80 rounded-2xl shadow-xl transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-2xl flex items-center justify-center relative flex-col">
-            <div className="h-36 w-72 bg-[#464B00] p-3 rounded-2xl -translate-y-[105px] flex items-start justify-start">
+            <div className="absolute -translate-x-1/2 top-4 left-1/2 h-[70%] w-[90%] bg-[#464B00] p-3 rounded-2xl flex items-start justify-start">
               <h1 className="font-semibold text-white mt-2 ml-2">
                 {recipes[2]?.title}
               </h1>
