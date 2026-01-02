@@ -3,6 +3,7 @@ import Logo from "../assets/Logo.png";
 import { useLocation } from "react-router";
 
 import Button from "@mui/material/Button"; 
+import LoadingScreen from "./LoadingSceen";
 
 const RecipePage = () => {
   const location = useLocation();
@@ -48,11 +49,7 @@ const RecipePage = () => {
   // Loading State
   if (loading) {
     return (
-      <div className="h-screen bg-blue-200 flex items-center justify-center">
-        <h1 className="text-4xl font-bold text-white animate-pulse">
-          Consulting the AI Chef...
-        </h1>
-      </div>
+      <LoadingScreen/>
     );
   }
 
