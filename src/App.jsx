@@ -3,8 +3,8 @@ import './App.css'
 import { Routes, Route } from 'react-router-dom'
 import Landing from './Pages/Landing'
 import RecipePage from './Pages/RecipePage'
-import LoadingScreen from './Pages/LoadingSceen'
-import CardRecipe from './Components/CardRecipe'
+
+import CardRecipe from './Pages/CardRecipe'
 
 function App() {
   const [count, setCount] = useState(0)

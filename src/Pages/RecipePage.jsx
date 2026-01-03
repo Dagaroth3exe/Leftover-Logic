@@ -104,7 +104,7 @@ const RecipePage = () => {
           <div className="RecipeCard3 bg-[#E3FF31] h-96 w-72 sm:w-80 rounded-2xl shadow-xl transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-2xl flex items-center justify-center relative flex-col">
             <div className="absolute -translate-x-1/2 top-4 left-1/2 h-[70%] w-[90%] bg-[#464B00] p-3 rounded-2xl flex items-start justify-start">
               <h1 className="font-semibold text-white mt-2 ml-2">
-                {recipes[2]?.title}
+                {recipes[2]?.title?.replace(/["']?onClick["']?\s*=\s*\$\d+/g, '')}
               </h1>
             </div>
             <button className="font-semibold absolute bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-xl shadow text-lg text-[#464B00] bg-white h-12 w-72 hover:bg-[#464B00] hover:text-white transition duration-150">

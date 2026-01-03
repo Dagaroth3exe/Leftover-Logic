@@ -2,6 +2,7 @@ import React from "react";
 import Logo from "../assets/Logo.png";
 import { FakeRecipes } from "../utils/FakeRecipes";
 import { useNavigate } from "react-router";
+import RecipePage from "./RecipePage";
 
 function CardRecipe() {
 
@@ -34,7 +35,7 @@ function CardRecipe() {
           
           {/* Dish Name - Now aligns to the left naturally */}
           <h1 className="font-bold text-[#4B0000] text-3xl mb-4 px-1">
-            Dish Name
+            {recipes[0]?.title}
           </h1>
 
           {/* White Content Box */}
