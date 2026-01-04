@@ -113,7 +113,7 @@ const RecipePage = () => {
             </button>
           </div>
         </div>
-        {showPopup && <RecipeRed/> } 
+        {showPopup && <RecipeRed/>} 
       </div>
     </>
   );
