@@ -3,8 +3,7 @@ import './App.css'
 import { Routes, Route } from 'react-router-dom'
 import Landing from './Pages/Landing'
 import RecipePage from './Pages/RecipePage'
-
-import CardRecipe from './Pages/CardRecipe'
+import RecipeRed from './Components/RecipeRed'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -14,7 +13,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/Recipe" element={<RecipePage/>}/>
-        <Route path="/RecipeCard" element={<CardRecipe/>}/>
+        <Route path="/Red" element={<RecipeRed/>}/>
       </Routes>
     </>
   )

@@ -1,34 +1,25 @@
 import React from "react";
 import Logo from "../assets/Logo.png";
 import { FakeRecipes } from "../utils/FakeRecipes";
-import { useNavigate } from "react-router";
-import RecipePage from "./RecipePage";
+import { useNavigate, useLocation } from "react-router";
+import RecipePage from "../Pages/RecipePage";
 
-function CardRecipe() {
+function RecipeRed() {
 
     const navigate = useNavigate();
+    const location = useLocation();
+    
+    // Get recipes from route state or use FakeRecipes as fallback
+    const recipes = location.state?.recipes || FakeRecipes(["tomato", "cheese", "pasta"]);
 
   return (
-    <div className="min-h-screen bg-blue-200 flex flex-col items-center p-8">
+    <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center">
       
-      {/* Logo Section */}
-      <div className="mb-8">
-        <img
-          src={Logo}
-          alt="Company Logo"
-          className="w-40 sm:w-52 md:w-72"
-        />
-      </div>
+      
 
       {/* Main Content Wrapper */}
       <div className="w-full max-w-6xl">
-        
-        {/* Back Button */}
-        <div className="flex justify-start mb-4">
-          <button onClick={()=>navigate(-1)} className="BackButton text-black bg-white shadow-lg h-10 w-16 rounded-md hover:bg-gray-100 transition-colors">
-            Back
-          </button>
-        </div>
+
 
         {/* Red Recipe Box - Changed items-center to items-start */}
         <div className="bg-[#FF3131] flex flex-col items-start rounded-xl p-4 shadow-xl">
@@ -49,4 +40,4 @@ function CardRecipe() {
   );
 }
 
-export default CardRecipe;
+export default RecipeRed;

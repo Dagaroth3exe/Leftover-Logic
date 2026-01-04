@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import Logo from "../assets/Logo.png";
 import { useLocation } from "react-router";
-
 import Button from "@mui/material/Button"; 
 import LoadingScreen from "./LoadingSceen";
+import RecipeRed from "../Components/RecipeRed";
 
 const RecipePage = () => {
   const location = useLocation();
   const ingredients = location.state?.ingredients || [];
   
   // State to hold real data
+  const [showPopup, setShowPopup] = useState(false)
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -83,7 +84,7 @@ const RecipePage = () => {
                 {recipes[0]?.title}
               </h1>
             </div>
-            <button className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white text-lg text-[#4B0000] h-12 w-72 rounded-xl font-semibold  hover:bg-[#4B0000] hover:text-white transition duration-150">
+            <button onClick={()=>setShowPopup(true)} className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white text-lg text-[#4B0000] h-12 w-72 rounded-xl font-semibold  hover:bg-[#4B0000] hover:text-white transition duration-150">
                 Show me How
             </button>
           </div>
@@ -112,6 +113,7 @@ const RecipePage = () => {
             </button>
           </div>
         </div>
+        {showPopup && <RecipeRed/> } 
       </div>
     </>
   );
