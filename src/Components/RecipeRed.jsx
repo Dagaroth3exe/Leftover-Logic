@@ -1,37 +1,47 @@
 import React from "react";
-import Logo from "../assets/Logo.png";
-import { FakeRecipes } from "../utils/FakeRecipes";
-import { useNavigate, useLocation } from "react-router";
-import RecipePage from "../Pages/RecipePage";
 
-function RecipeRed() {
-
-    const navigate = useNavigate();
-    const location = useLocation();
-    
-    // Get recipes from route state or use FakeRecipes as fallback
-    const recipes = location.state?.recipes || FakeRecipes(["tomato", "cheese", "pasta"]);
+// 👇 Updated to accept 'data' (the recipe info) and 'onClose' (to close the popup)
+function RecipeRed({ data, onClose }) {
+  
+  // Safety check: If no data is passed, don't render anything
+  if (!data) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center">
+    // Fixed Overlay
+    <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center z-50 p-4">
       
-      
-
       {/* Main Content Wrapper */}
-      <div className="w-full max-w-6xl">
+      <div className="w-full max-w-5xl relative">
+        
+        {/* Close Button (The 'X') */}
+        <button 
+          onClick={onClose}
+          className="absolute -top-3 -right-3 bg-white text-[#FF3131] hover:text-[#4B0000] rounded-full p-2 shadow-lg font-bold z-10"
+        >
+          ✕
+        </button>
 
-
-        {/* Red Recipe Box - Changed items-center to items-start */}
-        <div className="bg-[#FF3131] flex flex-col items-start rounded-xl p-4 shadow-xl">
+        {/* Red Recipe Box */}
+        <div className="bg-[#FF3131] flex flex-col items-start rounded-xl p-4 shadow-2xl max-h-[85vh]">
           
-          {/* Dish Name - Now aligns to the left naturally */}
+          {/* Dish Name */}
           <h1 className="font-bold text-[#4B0000] text-3xl mb-4 px-1">
-            {recipes[0]?.title}
+            {data.title}
           </h1>
 
-          {/* White Content Box */}
-          <div className="bg-white w-full p-8 rounded-lg text-xl text-gray-800 leading-relaxed">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Atque labore facere animi quo illo, sint, numquam a enim dignissimos facilis perferendis accusantium quisquam eos, maxime consequatur quos excepturi veritatis! Quis nostrum dolorum animi perferendis deserunt ad, eius sequi sit aut, nihil provident ratione doloremque rerum porro! Aliquid quos alias sunt id quis? Temporibus sit odio, laudantium distinctio fugiat corrupti ipsa veniam deserunt praesentium error labore delectus minus itaque aspernatur dolores optio a cupiditate culpa reiciendis saepe?
+          {/* White Content Box (Scrollable) */}
+          <div className="bg-white w-full p-8 rounded-lg text-xl text-gray-800 leading-relaxed overflow-y-auto">
+            
+            {/* Description Section */}
+            <p className="italic text-gray-500 mb-6 border-b pb-4">
+                {data.description}
+            </p>
+
+            {/* Instructions Section */}
+            <div className="whitespace-pre-line font-medium">
+                {data.instructions}
+            </div>
+
           </div>
           
         </div>

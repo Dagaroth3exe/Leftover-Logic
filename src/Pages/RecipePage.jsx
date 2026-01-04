@@ -10,7 +10,7 @@ const RecipePage = () => {
   const ingredients = location.state?.ingredients || [];
   
   // State to hold real data
-  const [showPopup, setShowPopup] = useState(false)
+  const [showPopup, setShowPopup] = useState(null)
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -84,7 +84,8 @@ const RecipePage = () => {
                 {recipes[0]?.title}
               </h1>
             </div>
-            <button onClick={()=>setShowPopup(true)} className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white text-lg text-[#4B0000] h-12 w-72 rounded-xl font-semibold  hover:bg-[#4B0000] hover:text-white transition duration-150">
+            <button onClick={()=>setShowPopup(recipes[0])} 
+            className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white text-lg text-[#4B0000] h-12 w-72 rounded-xl font-semibold  hover:bg-[#4B0000] hover:text-white transition duration-150">
                 Show me How
             </button>
           </div>
@@ -113,7 +114,10 @@ const RecipePage = () => {
             </button>
           </div>
         </div>
-        {showPopup && <RecipeRed/>} 
+        <RecipeRed
+        data={showPopup}
+        onClose={()=> setShowPopup(null)}
+        /> 
       </div>
     </>
   );
