@@ -4,13 +4,16 @@ import { useLocation } from "react-router";
 import Button from "@mui/material/Button"; 
 import LoadingScreen from "./LoadingSceen";
 import RecipeRed from "../Components/RecipeRed";
+import RecipeBlue from "../Components/RecipeBlue";
+import RecipeYellow from "../Components/RecipeYellow";
 
 const RecipePage = () => {
   const location = useLocation();
   const ingredients = location.state?.ingredients || [];
   
   // State to hold real data
-  const [showPopup, setShowPopup] = useState(null) //hooks
+  const [showPopup, setShowPopup] = useState(null) 
+  const [cardColor, setCardColor] = useState(null) 
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -70,7 +73,7 @@ const RecipePage = () => {
         <img
           src={Logo}
           alt="Company Logo"
-          className="pointer-events-none w-40 sm:w-52 md:w-72 mb-8"
+          className="pointer-events-none w-40 sm:w-52 md:w-72 mb-2"
         />
 
         <h1 className="pb-5 text-4xl sm:text-4xl font-bold">Take your Pick</h1>
@@ -84,7 +87,7 @@ const RecipePage = () => {
                 {recipes[0]?.title}
               </h1>
             </div>
-            <button onClick={()=>setShowPopup(recipes[0])} 
+            <button onClick={()=>{ setShowPopup(recipes[0]); setCardColor('red'); }} 
             className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white text-lg text-[#4B0000] h-12 w-72 rounded-xl font-semibold  hover:bg-[#4B0000] hover:text-white transition duration-150">
                 Show me How
             </button>
@@ -97,7 +100,7 @@ const RecipePage = () => {
                 {recipes[1]?.title}
               </h1>
             </div>
-            <button onClick={()=>setShowPopup(recipes[1])} className="font-semibold absolute bottom-4 left-1/2 transform -translate-x-1/2 text-lg bg-white text-[#000A4B] px-4 py-2 rounded-xl h-12 w-72 shadow hover:bg-[#000A4B] hover:text-white transition duration-150">
+            <button onClick={()=>{ setShowPopup(recipes[1]); setCardColor('blue'); }} className="font-semibold absolute bottom-4 left-1/2 transform -translate-x-1/2 text-lg bg-white text-[#000A4B] px-4 py-2 rounded-xl h-12 w-72 shadow hover:bg-[#000A4B] hover:text-white transition duration-150">
               Show me How
             </button>
           </div>
@@ -109,15 +112,29 @@ const RecipePage = () => {
                 {recipes[2]?.title}
               </h1>
             </div>
-            <button onClick={()=>setShowPopup(recipes[2])} className="font-semibold absolute bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-xl shadow text-lg text-[#464B00] bg-white h-12 w-72 hover:bg-[#464B00] hover:text-white transition duration-150">
+            <button onClick={()=>{ setShowPopup(recipes[2]); setCardColor('yellow'); }} className="font-semibold absolute bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-xl shadow text-lg text-[#464B00] bg-white h-12 w-72 hover:bg-[#464B00] hover:text-white transition duration-150">
                 Show me How
             </button>
           </div>
         </div>
-        <RecipeRed
-        data={showPopup}
-        onClose={()=> setShowPopup(null)}
-        /> 
+        {cardColor === 'red' && (
+          <RecipeRed
+            data={showPopup}
+            onClose={()=> { setShowPopup(null); setCardColor(null); }}
+          />
+        )}
+        {cardColor === 'blue' && (
+          <RecipeBlue
+            data={showPopup}
+            onClose={()=> { setShowPopup(null); setCardColor(null); }}
+          />
+        )}
+        {cardColor === 'yellow' && (
+          <RecipeYellow
+            data={showPopup}
+            onClose={()=> { setShowPopup(null); setCardColor(null); }}
+          />
+        )}
       </div>
     </>
   );
