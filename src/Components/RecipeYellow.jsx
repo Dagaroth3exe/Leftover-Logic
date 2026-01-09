@@ -38,9 +38,16 @@ function RecipeYellow({ data, onClose }) {
             </p>
 
             {/* Instructions Section */}
-            <div className="whitespace-pre-line font-medium">
-                {data.instructions}
-            </div>
+            <ul className="list-disc pl-6 space-y-3 font-medium">
+              {data.instructions
+                ?.split("\n")
+                .filter((line) => line.trim())
+                .map((step, i) => (
+                  <li key={i} className="pl-2 mb-3 leading-relaxed">
+                    {step.replace(/^\d+\.\s*|^\*\s*|^\-\s*/, "")}
+                  </li>
+                ))}
+            </ul>
 
           </div>
           
