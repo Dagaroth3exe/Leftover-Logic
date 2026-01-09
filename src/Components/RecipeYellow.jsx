@@ -38,13 +38,15 @@ function RecipeYellow({ data, onClose }) {
             </p>
 
             {/* Instructions Section */}
-            <ul className="list-disc pl-6 space-y-3 font-medium">
+            <ul className="list-disc pl-6 space-y-4 font-medium">
               {data.instructions
-                ?.split("\n")
+                /* 1. Split by new lines OR by a period followed by a space */
+                ?.split(/\n|\.(?=\s)/)
                 .filter((line) => line.trim())
                 .map((step, i) => (
-                  <li key={i} className="pl-2 mb-3 leading-relaxed">
-                    {step.replace(/^\d+\.\s*|^\*\s*|^\-\s*/, "")}
+                  <li key={i} className="pl-2 leading-relaxed">
+                    {/* 2. Clean up any leftover punctuation or list markers */}
+                    {step.trim().replace(/^\d+\.\s*|^\*\s*|^\-\s*/, "")}
                   </li>
                 ))}
             </ul>
