@@ -1,0 +1,19 @@
+# Exported from Render on 2026-01-10T18:38:12Z
+version: "1"
+projects:
+- name: My project
+  environments:
+  - name: Production
+    services:
+    - type: web
+      name: Leftover-Logic
+      runtime: node
+      repo: https://github.com/Dagaroth3exe/Leftover-Logic
+      plan: free
+      envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      region: oregon
+      buildCommand: npm install
+      startCommand: ' node server.js'
+      autoDeployTrigger: commit
