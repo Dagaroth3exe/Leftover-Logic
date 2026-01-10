@@ -23,13 +23,13 @@ function RecipeYellow({ data, onClose }) {
                 {data.description}
             </p>
 
-            <ul className="list-disc pl-6 space-y-4 font-medium">
+            <ul className="list-none space-y-4 font-medium">
               {data.instructions
-                ?.split(/\n|\.(?=\s)/)
+                ?.split(/(?=\d+\.\s)|\n/)
                 .filter((line) => line.trim())
                 .map((step, i) => (
-                  <li key={i} className="pl-2 leading-relaxed">
-                    {step.trim().replace(/^\d+\.\s*|^\*\s*|^\-\s*/, "")}
+                  <li key={i} className="leading-relaxed">
+                    {step.trim()}
                   </li>
                 ))}
             </ul>

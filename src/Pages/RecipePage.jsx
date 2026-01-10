@@ -18,6 +18,8 @@ const RecipePage = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    let isCancelled = false;
+    
     const fetchRecipes = async () => {
       try {
         const response = await fetch("http://localhost:5000/api/generate", {
@@ -30,22 +32,32 @@ const RecipePage = () => {
 
         const data = await response.json();
         
-        if (data.recipes) {
-            setRecipes(data.recipes);
-        } else {
-            setError("No recipes found.");
+        if (!isCancelled) {
+          if (data.recipes) {
+              setRecipes(data.recipes);
+          } else {
+              setError("No recipes found.");
+          }
         }
       } catch (err) {
-        console.error(err);
-        setError("Failed to connect to the chef!");
+        if (!isCancelled) {
+          console.error(err);
+          setError("Failed to connect to the chef!");
+        }
       } finally {
-        setLoading(false);
+        if (!isCancelled) {
+          setLoading(false);
+        }
       }
     };
 
     if (ingredients.length > 0) {
       fetchRecipes();
     }
+    
+    return () => {
+      isCancelled = true;
+    };
   }, [ingredients]);
 
   if (loading) {
