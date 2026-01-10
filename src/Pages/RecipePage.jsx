@@ -11,7 +11,6 @@ const RecipePage = () => {
   const location = useLocation();
   const ingredients = location.state?.ingredients || [];
   
-  // State to hold real data
   const [showPopup, setShowPopup] = useState(null) 
   const [cardColor, setCardColor] = useState(null) 
   const [recipes, setRecipes] = useState([]);
@@ -19,7 +18,6 @@ const RecipePage = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Function to fetch from your backend
     const fetchRecipes = async () => {
       try {
         const response = await fetch("http://localhost:5000/api/generate", {
@@ -50,14 +48,12 @@ const RecipePage = () => {
     }
   }, [ingredients]);
 
-  // Loading State
   if (loading) {
     return (
       <LoadingScreen/>
     );
   }
 
-  // Error State
   if (error || recipes.length === 0) {
      return (
        <div className="h-screen bg-blue-200 flex flex-col items-center justify-center gap-4">
@@ -79,7 +75,6 @@ const RecipePage = () => {
         <h1 className="pb-5 text-4xl sm:text-4xl font-bold">Take your Pick</h1>
 
         <div className="mb-16 cardContainer flex flex-col sm:flex-row flex-wrap justify-center gap-7 ">
-          {/* CARD 1 */}
           <div className="RecipeCard1 bg-[#FF3131] h-96 w-72 sm:w-80 rounded-2xl shadow-xl transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-2xl flex items-center justify-center relative">
 
             <div className="absolute -translate-x-1/2 left-1/2 h-[70%] w-[90%] top-4 bg-[#4B0000] p-3 rounded-2xl flex items-start justify-start">
@@ -93,7 +88,6 @@ const RecipePage = () => {
             </button>
           </div>
 
-          {/* CARD 2 */}
           <div className="RecipeCard2 bg-[#3179FF] h-96 w-72 sm:w-80 rounded-2xl shadow-xl transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-2xl flex flex-col items-center justify-center relative over">
             <div className="absolute left-1/2 -translate-x-1/2 h-[70%] w-[90%] top-4 bg-[#000A4B] p-3 rounded-2xl  flex items-start justify-start ">
               <h1 className="font-semibold text-white mt-2 ml-2">
@@ -105,7 +99,6 @@ const RecipePage = () => {
             </button>
           </div>
 
-          {/* CARD 3 */}
           <div className="RecipeCard3 bg-[#E3FF31] h-96 w-72 sm:w-80 rounded-2xl shadow-xl transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-2xl flex items-center justify-center relative flex-col">
             <div className="absolute -translate-x-1/2 top-4 left-1/2 h-[70%] w-[90%] bg-[#464B00] p-3 rounded-2xl flex items-start justify-start">
               <h1 className="font-semibold text-white mt-2 ml-2">

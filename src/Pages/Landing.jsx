@@ -29,7 +29,6 @@ export default function Landing() {
     setLoading(true); 
   };
 
-  // 👇 THIS is what Loading will call
   const handleLoadingComplete = () => {
     navigate("/Recipe", {
       state: { ingredients },
