@@ -22,7 +22,9 @@ const RecipePage = () => {
     
     const fetchRecipes = async () => {
       try {
-        const response = await fetch("/api/generate", {
+        const base = import.meta.env.VITE_API_URL || "";
+        const url = base ? `${base}/api/generate` : "/api/generate";
+        const response = await fetch(url, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
