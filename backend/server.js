@@ -29,7 +29,11 @@ app.post("/api/generate", async (req, res) => {
 
     const prompt = `
       I have these leftovers: ${ingredients.join(", ")}.
-      Create 3 creative recipes using these ingredients. 
+      Create 3 creative recipes using these ingredients: 
+      1. An Indian dish
+      2. An Italian dish
+      3. A Chinese dish
+      
       You can assume I have basic pantry staples (oil, salt, pepper, water).
       
       IMPORTANT: Return the response ONLY as a valid JSON array of objects. 

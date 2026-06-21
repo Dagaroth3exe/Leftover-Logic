@@ -1,44 +1,49 @@
 import React, { useEffect, useState } from "react";
-import Logo from "../assets/Logo.png";
-import { useLocation } from "react-router";
-import Button from "@mui/material/Button"; 
+import LogoSticker from "../Components/LogoSticker";
+import { useLocation, useNavigate } from "react-router";
 import LoadingScreen from "./LoadingSceen";
 import RecipeRed from "../Components/RecipeRed";
 import RecipeBlue from "../Components/RecipeBlue";
 import RecipeYellow from "../Components/RecipeYellow";
 
+const CARDS = [
+  { color: "red",    label: "🇮🇳 Indian",  accent: "#FF3131", dark: "#4B0000",  glow: "rgba(255,49,49,0.15)"   },
+  { color: "blue",   label: "🇮🇹 Italian", accent: "#3179FF", dark: "#000A4B",  glow: "rgba(49,121,255,0.15)"  },
+  { color: "yellow", label: "🇨🇳 Chinese", accent: "#E3FF31", dark: "#464B00",  glow: "rgba(227,255,49,0.12)"  },
+];
+
 const RecipePage = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const ingredients = location.state?.ingredients || [];
-  
-  const [showPopup, setShowPopup] = useState(null) 
-  const [cardColor, setCardColor] = useState(null) 
+
+  const [showPopup, setShowPopup] = useState(null);
+  const [cardColor, setCardColor] = useState(null);
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     let isCancelled = false;
-    
+    const stateIngredients = location.state?.ingredients || [];
+
     const fetchRecipes = async () => {
       try {
         const base = import.meta.env.VITE_API_URL || "";
         const url = base ? `${base}/api/generate` : "/api/generate";
         const response = await fetch(url, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ ingredients }),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ingredients: stateIngredients }),
         });
 
         const data = await response.json();
-        
+
         if (!isCancelled) {
           if (data.recipes) {
-              setRecipes(data.recipes);
+            setRecipes(data.recipes);
           } else {
-              setError("No recipes found.");
+            setError("No recipes found.");
           }
         }
       } catch (err) {
@@ -53,97 +58,129 @@ const RecipePage = () => {
       }
     };
 
-    if (ingredients.length > 0) {
+    if (stateIngredients.length > 0) {
       fetchRecipes();
+    } else {
+      setLoading(false);
+      setError("No ingredients were provided.");
     }
-    
-    return () => {
-      isCancelled = true;
-    };
-  }, [ingredients]);
 
-  if (loading) {
+    return () => { isCancelled = true; };
+  }, [location.state]);
+
+  if (loading) return <LoadingScreen />;
+
+  if (error || recipes.length === 0) {
     return (
-      <LoadingScreen/>
+      <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-slate-900 to-zinc-950 flex flex-col items-center justify-center gap-6 px-4">
+        <div className="text-5xl">🍳</div>
+        <h1 className="text-2xl font-bold text-red-400">{error || "Something went wrong"}</h1>
+        <button
+          onClick={() => navigate("/")}
+          className="px-6 py-3 bg-white/[0.08] border border-white/15 text-white rounded-xl hover:bg-white/15 transition-all duration-200"
+        >
+          ← Try Again
+        </button>
+      </div>
     );
   }
 
-  if (error || recipes.length === 0) {
-     return (
-       <div className="h-screen bg-blue-200 flex flex-col items-center justify-center gap-4">
-         <h1 className="text-2xl font-bold text-red-500">{error || "Something went wrong"}</h1>
-         <button onClick={() => window.history.back()} className="px-4 py-2 bg-white rounded-xl">Try Again</button>
-       </div>
-     )
-  }
-
   return (
-    <>
-      <div className="p-4 h-screen bg-blue-200 flex items-center justify-center flex-col overflow-hidden">
-        <img
-          src={Logo}
-          alt="Company Logo"
-          className="pointer-events-none w-40 sm:w-52 md:w-72 mb-2"
-        />
+    <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-slate-900 to-zinc-950 flex flex-col items-center px-4 py-10 relative overflow-hidden">
+      {/* Ambient glows */}
+      <div className="absolute top-1/4 left-1/5 w-[600px] h-[600px] bg-red-950/20 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/5 w-[400px] h-[400px] bg-blue-950/20 rounded-full blur-[80px] pointer-events-none" />
 
-        <h1 className="pb-5 text-4xl sm:text-4xl font-bold">Take your Pick</h1>
+      {/* Header */}
+      <div className="relative z-10 flex flex-col items-center mb-8">
+        <LogoSticker className="w-40 sm:w-52 mb-4" />
+        <h1 className="text-3xl sm:text-4xl font-bold text-white mb-3">Your Recipes</h1>
 
-        <div className="mb-16 cardContainer flex flex-col sm:flex-row flex-wrap justify-center gap-7 ">
-          <div className="RecipeCard1 bg-[#FF3131] h-96 w-72 sm:w-80 rounded-2xl shadow-xl transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-2xl flex items-center justify-center relative">
-
-            <div className="absolute -translate-x-1/2 left-1/2 h-[70%] w-[90%] top-4 bg-[#4B0000] p-3 rounded-2xl flex items-start justify-start">
-              <h1 className="font-semibold text-white mt-2 ml-2">
-                {recipes[0]?.title}
-              </h1>
-            </div>
-            <button onClick={()=>{ setShowPopup(recipes[0]); setCardColor('red'); }} 
-            className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white text-lg text-[#4B0000] h-12 w-72 rounded-xl font-semibold  hover:bg-[#4B0000] hover:text-white transition duration-150">
-                Show me How
-            </button>
+        {/* Ingredients used */}
+        {ingredients.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 justify-center max-w-lg">
+            {ingredients.map((ing, i) => (
+              <span
+                key={i}
+                className="px-2.5 py-1 rounded-full bg-white/[0.06] border border-white/10 text-gray-500 text-xs"
+              >
+                {ing}
+              </span>
+            ))}
           </div>
-
-          <div className="RecipeCard2 bg-[#3179FF] h-96 w-72 sm:w-80 rounded-2xl shadow-xl transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-2xl flex flex-col items-center justify-center relative over">
-            <div className="absolute left-1/2 -translate-x-1/2 h-[70%] w-[90%] top-4 bg-[#000A4B] p-3 rounded-2xl  flex items-start justify-start ">
-              <h1 className="font-semibold text-white mt-2 ml-2">
-                {recipes[1]?.title}
-              </h1>
-            </div>
-            <button onClick={()=>{ setShowPopup(recipes[1]); setCardColor('blue'); }} className="font-semibold absolute bottom-4 left-1/2 transform -translate-x-1/2 text-lg bg-white text-[#000A4B] px-4 py-2 rounded-xl h-12 w-72 shadow hover:bg-[#000A4B] hover:text-white transition duration-150">
-              Show me How
-            </button>
-          </div>
-
-          <div className="RecipeCard3 bg-[#E3FF31] h-96 w-72 sm:w-80 rounded-2xl shadow-xl transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-2xl flex items-center justify-center relative flex-col">
-            <div className="absolute -translate-x-1/2 top-4 left-1/2 h-[70%] w-[90%] bg-[#464B00] p-3 rounded-2xl flex items-start justify-start">
-              <h1 className="font-semibold text-white mt-2 ml-2">
-                {recipes[2]?.title}
-              </h1>
-            </div>
-            <button onClick={()=>{ setShowPopup(recipes[2]); setCardColor('yellow'); }} className="font-semibold absolute bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-xl shadow text-lg text-[#464B00] bg-white h-12 w-72 hover:bg-[#464B00] hover:text-white transition duration-150">
-                Show me How
-            </button>
-          </div>
-        </div>
-        {cardColor === 'red' && (
-          <RecipeRed
-            data={showPopup}
-            onClose={()=> { setShowPopup(null); setCardColor(null); }}
-          />
-        )}
-        {cardColor === 'blue' && (
-          <RecipeBlue
-            data={showPopup}
-            onClose={()=> { setShowPopup(null); setCardColor(null); }}
-          />
-        )}
-        {cardColor === 'yellow' && (
-          <RecipeYellow
-            data={showPopup}
-            onClose={()=> { setShowPopup(null); setCardColor(null); }}
-          />
         )}
       </div>
-    </>
+
+      {/* Cards */}
+      <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-6 mb-10 relative z-10">
+        {CARDS.map(({ color, label, accent, dark, glow }, idx) => {
+          const recipe = recipes[idx];
+          return (
+            <div
+              key={color}
+              className="relative w-72 sm:w-80 rounded-2xl shadow-2xl transition-all duration-300 ease-out hover:-translate-y-2 cursor-pointer overflow-hidden flex flex-col"
+              style={{
+                background: `linear-gradient(145deg, ${accent}18 0%, ${accent}30 100%)`,
+                border: `1px solid ${accent}35`,
+                boxShadow: `0 8px 32px ${glow}`,
+              }}
+            >
+              {/* Glow blob */}
+              <div
+                className="absolute -top-10 -right-10 w-40 h-40 rounded-full opacity-30 pointer-events-none"
+                style={{ background: accent, filter: "blur(50px)" }}
+              />
+
+              <div className="relative p-5 flex flex-col flex-1">
+                {/* Cuisine badge */}
+                <span
+                  className="self-start px-3 py-1 rounded-full text-xs font-bold mb-4"
+                  style={{
+                    background: `${accent}22`,
+                    border: `1px solid ${accent}50`,
+                    color: accent,
+                  }}
+                >
+                  {label}
+                </span>
+
+                {/* Title */}
+                <h2 className="text-white font-bold text-lg mb-2 leading-snug">
+                  {recipe?.title}
+                </h2>
+
+                {/* Description preview */}
+                <p className="text-gray-400 text-sm leading-relaxed mb-6 flex-1 line-clamp-3">
+                  {recipe?.description}
+                </p>
+
+                {/* CTA */}
+                <button
+                  onClick={() => { setShowPopup(recipe); setCardColor(color); }}
+                  className="w-full py-2.5 rounded-xl font-semibold text-sm transition-all duration-150 hover:opacity-85 active:scale-95"
+                  style={{ background: accent, color: dark }}
+                >
+                  View Recipe →
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Back button */}
+      <button
+        onClick={() => navigate("/")}
+        className="relative z-10 px-5 py-2.5 rounded-xl bg-white/[0.06] border border-white/10 text-gray-500 hover:text-white hover:bg-white/[0.12] transition-all duration-200 text-sm"
+      >
+        ← Try different ingredients
+      </button>
+
+      {/* Modals */}
+      {cardColor === "red"    && <RecipeRed    data={showPopup} onClose={() => { setShowPopup(null); setCardColor(null); }} />}
+      {cardColor === "blue"   && <RecipeBlue   data={showPopup} onClose={() => { setShowPopup(null); setCardColor(null); }} />}
+      {cardColor === "yellow" && <RecipeYellow data={showPopup} onClose={() => { setShowPopup(null); setCardColor(null); }} />}
+    </div>
   );
 };
 
