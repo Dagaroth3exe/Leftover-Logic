@@ -10,10 +10,6 @@ import { ingredientEmoji } from "../utils/ingredientEmoji";
 import { mealTime } from "../utils/mealTime";
 import { play } from "../sound/sfx";
 import SoundToggle from "../Components/SoundToggle";
-// TEMPORARY dev preview (see src/dev/sampleRecipes.js). Dead-code-eliminated in production builds.
-import { SAMPLE_INGREDIENTS } from "../dev/sampleRecipes";
-
-const DEV_PREVIEW = import.meta.env.DEV;
 
 const SHELVES = [
   { id: "basics", label: "Basics", emoji: "🥚", items: ["eggs", "onion", "tomato", "garlic", "potato", "lemon"] },
@@ -90,24 +86,6 @@ export default function Landing() {
     </button>
   );
 
-  // TEMPORARY dev-only shortcut to preview the recipe UI without calling Gemini.
-  const devPreviewButton = (extra) => (
-    <button
-      type="button"
-      data-sfx="none"
-      onClick={() => {
-        play("whoosh");
-        navigate("/recipes", { state: { ingredients: SAMPLE_INGREDIENTS, demo: true } });
-      }}
-      className={`items-center gap-2 rounded-full border border-dashed border-ink/30 px-3.5 py-2 text-[13px] text-ink/60 transition hover:border-ink hover:text-ink ${
-        extra.split(" ").includes("hidden") ? "" : "flex"
-      } ${extra}`}
-    >
-      🧪 Preview with sample recipes
-      <span className="text-[11px] text-ink/40">dev only</span>
-    </button>
-  );
-
   return (
     <main className="min-h-dvh overflow-x-clip lg:grid lg:grid-cols-[minmax(0,1.08fr)_minmax(0,1fr)]">
       {/* ---------- The fridge ---------- */}
@@ -118,7 +96,6 @@ export default function Landing() {
             <span className="flex items-center gap-1.5 rounded-full bg-card px-3.5 py-2 text-[14px] font-medium lg:hidden">
               <span aria-hidden>{meal.emoji}</span> {meal.label}
             </span>
-            {DEV_PREVIEW && devPreviewButton("hidden lg:flex")}
             <SoundToggle />
           </div>
         </header>
@@ -230,8 +207,6 @@ export default function Landing() {
               ))}
             </div>
           </section>
-
-          {DEV_PREVIEW && devPreviewButton("mt-6 lg:hidden")}
 
           {/* Inline CTA on desktop; phones/tablets get the sticky one below */}
           <div className="mt-9 hidden animate-fade-up lg:mt-[3vh] lg:block" style={{ animationDelay: "320ms" }}>
