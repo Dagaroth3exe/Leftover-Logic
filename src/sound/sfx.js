@@ -13,7 +13,7 @@ const STORAGE_KEY = "leftover-logic:sound";
 const VOLUME_KEY = "leftover-logic:volume";
 const DEFAULT_VOLUME = 0.7;
 // Mix level feeding the limiter (what the sounds were balanced at).
-const MIX_GAIN = 0.82;
+const MIX_GAIN = 1.15; // raised from 0.82 (+3 dB)
 
 let enabled = readPref();
 let volume = readVolume();
