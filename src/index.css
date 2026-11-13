@@ -1,21 +1,163 @@
-/* Import Outfit font from Google Fonts (must appear before other rules) */
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
-
-
-/* Material Web JS imports moved to src/main.jsx */
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@layer base {
+  html {
+    color-scheme: light;
+  }
+
+  body {
+    @apply bg-paper font-sans text-ink antialiased;
+    font-optical-sizing: auto;
+  }
+
+  ::selection {
+    background: #f5c84c;
+  }
+
+  :focus-visible {
+    outline: 2px solid #1c1b19;
+    outline-offset: 3px;
+  }
 }
 
-/* Apply the Outfit font globally so it's visible on all pages */
-html, body {
-  font-family: 'Outfit', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+@layer components {
+  /* Resting tilt for magnets and dealt cards (set --tilt inline). */
+  .tilt {
+    transform: rotate(var(--tilt, 0deg));
+    transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.25, 1.1);
+  }
+  .tilt-lift:hover,
+  .tilt-lift:focus-visible {
+    transform: rotate(0deg) translateY(-6px);
+  }
+
+  /* The "thickness" under a fridge magnet: a hard edge, not a soft glow. */
+  .magnet-edge {
+    box-shadow: 0 3px 0 rgba(28, 27, 25, 0.16);
+  }
+
+  /* Volume slider: ink fill up to --fill, soft track after it. */
+  .volume-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    border-radius: 999px;
+    background: linear-gradient(to right, #1c1b19 var(--fill, 70%), rgba(28, 27, 25, 0.12) var(--fill, 70%));
+    cursor: pointer;
+  }
+  .volume-slider:disabled {
+    cursor: not-allowed;
+  }
+  .volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    background: #fff;
+    border: 2px solid #1c1b19;
+    transition: transform 0.15s ease;
+  }
+  .volume-slider:active::-webkit-slider-thumb {
+    transform: scale(1.15);
+  }
+  .volume-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 999px;
+    background: #fff;
+    border: 2px solid #1c1b19;
+  }
+
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 }
 
+/* ---------- Dish illustrations (src/Components/DishArt.jsx) ---------- */
+
+.art-steam {
+  animation: art-steam 2.7s ease-in-out infinite;
+}
+@keyframes art-steam {
+  0% { opacity: 0; transform: translateY(8px); }
+  40% { opacity: 0.9; }
+  100% { opacity: 0; transform: translateY(-12px); }
+}
+
+.art-bubble {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: art-bubble 1.8s ease-in-out infinite;
+}
+@keyframes art-bubble {
+  0%, 100% { transform: scale(0); opacity: 0; }
+  40% { transform: scale(1); opacity: 1; }
+  70% { transform: scale(1.2); opacity: 0; }
+}
+
+.art-bob {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: art-bob 2.4s ease-in-out infinite;
+}
+@keyframes art-bob {
+  0%, 100% { transform: translateY(0) rotate(-8deg); }
+  50% { transform: translateY(-2px) rotate(10deg); }
+}
+
+.art-twirl {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: art-twirl 2.2s ease-in-out infinite;
+}
+@keyframes art-twirl {
+  0%, 100% { transform: scaleX(1); }
+  50% { transform: scaleX(-1); }
+}
+
+.art-wok {
+  transform-box: view-box;
+  transform-origin: 150px 70px;
+  animation: art-wok 1.6s ease-in-out infinite;
+}
+@keyframes art-wok {
+  0%, 60%, 100% { transform: rotate(0deg); }
+  22% { transform: translateY(-3px) rotate(-8deg); }
+  42% { transform: rotate(3deg); }
+}
+
+.art-toss {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: art-toss 1.6s cubic-bezier(0.3, 0.6, 0.4, 1) infinite;
+}
+@keyframes art-toss {
+  0%, 15% { transform: translateY(0) rotate(0deg); }
+  45% { transform: translateY(-40px) rotate(180deg); }
+  75%, 100% { transform: translateY(0) rotate(360deg); }
+}
+
+.art-flame {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: art-flame 0.45s ease-in-out infinite alternate;
+}
+@keyframes art-flame {
+  from { transform: scale(1.05, 0.8); }
+  to { transform: scale(0.95, 1.15); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

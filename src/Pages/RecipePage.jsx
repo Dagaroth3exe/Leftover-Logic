@@ -1,187 +1,224 @@
-import React, { useEffect, useState } from "react";
-import LogoSticker from "../Components/LogoSticker";
-import { useLocation, useNavigate } from "react-router";
-import LoadingScreen from "./LoadingSceen";
-import RecipeRed from "../Components/RecipeRed";
-import RecipeBlue from "../Components/RecipeBlue";
-import RecipeYellow from "../Components/RecipeYellow";
+import { useEffect, useState } from "react";
+import { Link, Navigate, useLocation } from "react-router-dom";
+import KitchenCard from "../Components/KitchenCard";
+import RecipeSheet from "../Components/RecipeSheet";
+import Magnet from "../Components/Magnet";
+import { ArrowLeft } from "../Components/Icons";
+import { StockPot } from "../Components/DishArt";
+import LoadingScreen from "./LoadingScreen";
+import { CUISINES } from "../theme";
+import { fetchRecipes } from "../api";
+// TEMPORARY dev preview (see src/dev/sampleRecipes.js). Dead-code-eliminated in production builds.
+import { SAMPLE_INGREDIENTS, SAMPLE_RECIPES } from "../dev/sampleRecipes";
 
-const CARDS = [
-  { color: "red",    label: "🇮🇳 Indian",  accent: "#FF3131", dark: "#4B0000",  glow: "rgba(255,49,49,0.15)"   },
-  { color: "blue",   label: "🇮🇹 Italian", accent: "#3179FF", dark: "#000A4B",  glow: "rgba(49,121,255,0.15)"  },
-  { color: "yellow", label: "🇨🇳 Chinese", accent: "#E3FF31", dark: "#464B00",  glow: "rgba(227,255,49,0.12)"  },
-];
+const DEV_PREVIEW = import.meta.env.DEV;
 
-const RecipePage = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const ingredients = location.state?.ingredients || [];
+/** Resolve with the sample recipes after a short delay, so the loading screen shows too. */
+function fetchSampleRecipes(signal) {
+  return new Promise((resolve, reject) => {
+    const t = setTimeout(() => resolve(SAMPLE_RECIPES), 2500);
+    signal.addEventListener("abort", () => {
+      clearTimeout(t);
+      reject(new DOMException("Aborted", "AbortError"));
+    });
+  });
+}
+import { mealTime } from "../utils/mealTime";
+import { play } from "../sound/sfx";
+import SoundToggle from "../Components/SoundToggle";
 
-  const [showPopup, setShowPopup] = useState(null);
-  const [cardColor, setCardColor] = useState(null);
+// Each card gets its own tilt.
+const TILTS = [-2, 1.8, -1.2];
+// Collage offsets once cards sit side by side (2 columns on tablet, 3 on desktop).
+const OFFSET = ["", "md:mt-10 xl:mt-14", "xl:mt-5"]; // the third card is "wide" below xl
+const STACK = ["z-0", "z-[1]", "z-[2]"];
+
+export default function RecipePage() {
+  const { state, search } = useLocation();
+  // TEMPORARY: /recipes?demo (or the landing page's preview button) shows sample recipes.
+  const demo = DEV_PREVIEW && (state?.demo || new URLSearchParams(search).has("demo"));
+  const ingredients = state?.ingredients ?? (import.meta.env.DEV && demo ? SAMPLE_INGREDIENTS : undefined);
+  const meal = mealTime();
+
+  const [status, setStatus] = useState("loading"); // loading | ready | error
   const [recipes, setRecipes] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [openIndex, setOpenIndex] = useState(null);
+  const [filter, setFilter] = useState("all");
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
-    let isCancelled = false;
-    const stateIngredients = location.state?.ingredients || [];
+    if (!ingredients?.length) return;
+    const controller = new AbortController();
 
-    const fetchRecipes = async () => {
+    (async () => {
       try {
-        const base = import.meta.env.VITE_API_URL || "";
-        const url = base ? `${base}/api/generate` : "/api/generate";
-        const response = await fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ingredients: stateIngredients }),
-        });
-
-        const data = await response.json();
-
-        if (!isCancelled) {
-          if (data.recipes) {
-            setRecipes(data.recipes);
-          } else {
-            setError("No recipes found.");
-          }
-        }
+        const result = import.meta.env.DEV && demo
+          ? await fetchSampleRecipes(controller.signal)
+          : await fetchRecipes(ingredients, controller.signal);
+        setRecipes(result.slice(0, CUISINES.length));
+        setStatus("ready");
+        // Timer bell, then one card-flick per card as they're dealt (matches KitchenCard delays).
+        play("ding");
+        result.slice(0, CUISINES.length).forEach((_, n) => setTimeout(() => play("deal"), 150 + n * 160));
       } catch (err) {
-        if (!isCancelled) {
-          console.error(err);
-          setError("Failed to connect to the chef!");
-        }
-      } finally {
-        if (!isCancelled) {
-          setLoading(false);
-        }
+        if (err.name === "AbortError") return;
+        setError(err.message);
+        setStatus("error");
+        play("error");
       }
+    })();
+
+    return () => controller.abort();
+  }, [ingredients, attempt, demo]);
+
+  if (!ingredients?.length) return <Navigate to="/" replace />;
+
+  if (status === "loading") return <LoadingScreen ingredients={ingredients} />;
+
+  if (status === "error") {
+    const retry = () => {
+      setError(null);
+      setStatus("loading");
+      setAttempt((a) => a + 1);
     };
-
-    if (stateIngredients.length > 0) {
-      fetchRecipes();
-    } else {
-      setLoading(false);
-      setError("No ingredients were provided.");
-    }
-
-    return () => { isCancelled = true; };
-  }, [location.state]);
-
-  if (loading) return <LoadingScreen />;
-
-  if (error || recipes.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-slate-900 to-zinc-950 flex flex-col items-center justify-center gap-6 px-4">
-        <div className="text-5xl">🍳</div>
-        <h1 className="text-2xl font-bold text-red-400">{error || "Something went wrong"}</h1>
-        <button
-          onClick={() => navigate("/")}
-          className="px-6 py-3 bg-white/[0.08] border border-white/15 text-white rounded-xl hover:bg-white/15 transition-all duration-200"
-        >
-          ← Try Again
-        </button>
-      </div>
+      <main className="flex min-h-dvh animate-fade-in items-center justify-center px-5 py-8 sm:px-8">
+        <div className="w-full max-w-[480px] md:grid md:max-w-[960px] md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] md:items-center md:gap-12">
+          <div className="tilt rounded-[36px] bg-[#F39A7F] p-7 md:p-10" style={{ "--tilt": "-1.5deg" }}>
+            <div className="mx-auto h-32 w-44 md:h-52 md:w-72" aria-hidden>
+              <StockPot smoky />
+            </div>
+          </div>
+          <div className="mt-8 md:mt-0">
+            <p className="font-serif text-[22px] italic text-ink/70 md:text-[28px]">Well, that burned.</p>
+            <h1 className="mt-1 text-[30px] font-semibold leading-[1] tracking-[-0.035em] md:text-[44px]">{error}</h1>
+            <div className="mt-8 flex gap-3">
+              <button
+                type="button"
+                onClick={retry}
+                className="h-14 flex-1 rounded-full bg-ink text-[16px] font-medium text-white transition active:scale-[0.98]"
+              >
+                Try again
+              </button>
+              <Link
+                to="/"
+                className="grid h-14 flex-1 place-items-center rounded-full bg-card text-[16px] font-medium ring-1 ring-ink/10 transition hover:ring-ink/30"
+              >
+                Change fridge
+              </Link>
+            </div>
+          </div>
+        </div>
+      </main>
     );
   }
 
+  const shown = recipes.map((r, i) => ({ r, i })).filter(({ i }) => filter === "all" || CUISINES[i].id === filter);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-slate-900 to-zinc-950 flex flex-col items-center px-4 py-10 relative overflow-hidden">
-      {/* Ambient glows */}
-      <div className="absolute top-1/4 left-1/5 w-[600px] h-[600px] bg-red-950/20 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/5 w-[400px] h-[400px] bg-blue-950/20 rounded-full blur-[80px] pointer-events-none" />
+    <main className="min-h-dvh overflow-x-clip px-5 pb-20 pt-4 sm:px-8 md:px-12 xl:px-16 2xl:px-24">
+      <header className="relative z-30 flex animate-fade-in items-center justify-between">
+        <Link
+          to="/"
+          aria-label="Back to your fridge"
+          className="flex h-11 items-center gap-2 rounded-full pl-2.5 pr-3 transition hover:bg-ink/5"
+        >
+          <ArrowLeft />
+          <span className="hidden text-[15px] font-medium md:inline">Your fridge</span>
+        </Link>
+        <span className="text-[18px] font-semibold tracking-[-0.02em]">
+          {meal.label === "Midnight snack" ? "Tonight's" : meal.label} menu
+        </span>
+        <div className="flex items-center gap-2">
+          <span className="flex h-11 items-center gap-1.5 rounded-full bg-card px-3 text-[15px] font-medium">
+            <span aria-hidden className="text-lg">{meal.emoji}</span>
+            <span className="hidden md:inline">{meal.label}</span>
+          </span>
+          <SoundToggle className="h-11 w-11" />
+        </div>
+      </header>
 
-      {/* Header */}
-      <div className="relative z-10 flex flex-col items-center mb-8">
-        <LogoSticker className="w-40 sm:w-52 mb-4" />
-        <h1 className="text-3xl sm:text-4xl font-bold text-white mb-3">Your Recipes</h1>
+      {demo && (
+        <p className="mx-auto mt-5 w-fit max-w-full rounded-full border border-dashed border-ink/30 px-3 py-1.5 text-[13px] text-ink/60 md:mx-0">
+          🧪 Sample recipes for previewing the UI, not generated by Gemini
+        </p>
+      )}
 
-        {/* Ingredients used */}
-        {ingredients.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 justify-center max-w-lg">
-            {ingredients.map((ing, i) => (
-              <span
-                key={i}
-                className="px-2.5 py-1 rounded-full bg-white/[0.06] border border-white/10 text-gray-500 text-xs"
-              >
-                {ing}
-              </span>
+      <section className="mx-auto mt-6 max-w-[560px] md:mt-10 md:max-w-none lg:flex lg:items-end lg:justify-between lg:gap-12">
+        <h1 className="animate-fade-up text-[40px] font-semibold leading-[0.95] tracking-[-0.045em] sm:text-[56px] lg:max-w-[14ch] xl:text-[72px] 2xl:text-[88px]">
+          Three dishes from <span className="font-serif font-normal italic tracking-[-0.02em]">what you had.</span>
+        </h1>
+
+        <div className="lg:flex lg:max-w-[46%] lg:flex-col lg:items-end lg:pb-2">
+          <div className="mt-4 flex flex-wrap gap-2 lg:mt-0 lg:justify-end">
+            {ingredients.map((item, i) => (
+              <Magnet key={item} name={item} small delay={100 + i * 50} />
             ))}
           </div>
-        )}
-      </div>
+          <div
+            className="no-scrollbar -mx-5 mt-7 flex gap-2 overflow-x-auto px-5 sm:mx-0 sm:px-0 lg:mt-5"
+            role="tablist"
+            aria-label="Filter by kitchen"
+          >
+            {[{ id: "all", name: "All", emoji: "🍽️" }, ...CUISINES].map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                role="tab"
+                aria-selected={filter === c.id}
+                onClick={() => setFilter(c.id)}
+                className={`flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-2 text-[14px] font-medium transition ${
+                  filter === c.id ? "bg-card ring-1 ring-ink/10" : "text-ink/55 hover:text-ink"
+                }`}
+              >
+                <span aria-hidden>{c.emoji}</span>
+                {c.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
 
-      {/* Cards */}
-      <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-6 mb-10 relative z-10">
-        {CARDS.map(({ color, label, accent, dark, glow }, idx) => {
-          const recipe = recipes[idx];
+      <section
+        className={`mx-auto mt-6 grid max-w-[560px] grid-cols-1 md:mt-10 ${
+          shown.length > 1
+            ? "md:max-w-none md:grid-cols-2 md:gap-6 xl:grid-cols-3 xl:gap-8"
+            : "md:max-w-[980px] xl:max-w-[1120px]"
+        }`}
+      >
+        {shown.map(({ r, i }, n) => {
+          // With 2 columns (tablet), an odd card out spans the full row in landscape.
+          const wide = shown.length === 3 && n === 2;
           return (
-            <div
-              key={color}
-              className="relative w-72 sm:w-80 rounded-2xl shadow-2xl transition-all duration-300 ease-out hover:-translate-y-2 cursor-pointer overflow-hidden flex flex-col"
-              style={{
-                background: `linear-gradient(145deg, ${accent}18 0%, ${accent}30 100%)`,
-                border: `1px solid ${accent}35`,
-                boxShadow: `0 8px 32px ${glow}`,
-              }}
-            >
-              {/* Glow blob */}
-              <div
-                className="absolute -top-10 -right-10 w-40 h-40 rounded-full opacity-30 pointer-events-none"
-                style={{ background: accent, filter: "blur(50px)" }}
-              />
-
-              <div className="relative p-5 flex flex-col flex-1">
-                {/* Cuisine badge */}
-                <span
-                  className="self-start px-3 py-1 rounded-full text-xs font-bold mb-4"
-                  style={{
-                    background: `${accent}22`,
-                    border: `1px solid ${accent}50`,
-                    color: accent,
-                  }}
-                >
-                  {label}
-                </span>
-
-                {/* Title */}
-                <h2 className="text-white font-bold text-lg mb-2 leading-snug">
-                  {recipe?.title}
-                </h2>
-
-                {/* Description preview */}
-                <p className="text-gray-400 text-sm leading-relaxed mb-6 flex-1 line-clamp-3">
-                  {recipe?.description}
-                </p>
-
-                {/* CTA */}
-                <button
-                  onClick={() => { setShowPopup(recipe); setCardColor(color); }}
-                  className="w-full py-2.5 rounded-xl font-semibold text-sm transition-all duration-150 hover:opacity-85 active:scale-95"
-                  style={{ background: accent, color: dark }}
-                >
-                  View Recipe →
-                </button>
-              </div>
-            </div>
+          <div
+            key={i}
+            className={`relative hover:z-10 focus-within:z-10 ${STACK[n]} ${n > 0 ? "-mt-4 md:mt-0" : ""} ${
+              filter === "all" && !wide ? OFFSET[i] : ""
+            } ${wide ? "md:max-xl:col-span-2 md:max-xl:mt-4" : ""}`}
+          >
+            <KitchenCard
+              recipe={r}
+              cuisine={CUISINES[i]}
+              tilt={filter === "all" ? TILTS[i] : 0}
+              delay={150 + n * 160}
+              onOpen={() => setOpenIndex(i)}
+              layout={shown.length === 1 ? "feature" : wide ? "wide" : "portrait"}
+              className="h-full"
+            />
+          </div>
           );
         })}
-      </div>
+      </section>
 
-      {/* Back button */}
-      <button
-        onClick={() => navigate("/")}
-        className="relative z-10 px-5 py-2.5 rounded-xl bg-white/[0.06] border border-white/10 text-gray-500 hover:text-white hover:bg-white/[0.12] transition-all duration-200 text-sm"
-      >
-        ← Try different ingredients
-      </button>
-
-      {/* Modals */}
-      {cardColor === "red"    && <RecipeRed    data={showPopup} onClose={() => { setShowPopup(null); setCardColor(null); }} />}
-      {cardColor === "blue"   && <RecipeBlue   data={showPopup} onClose={() => { setShowPopup(null); setCardColor(null); }} />}
-      {cardColor === "yellow" && <RecipeYellow data={showPopup} onClose={() => { setShowPopup(null); setCardColor(null); }} />}
-    </div>
+      {openIndex !== null && (
+        <RecipeSheet
+          recipe={recipes[openIndex]}
+          cuisine={CUISINES[openIndex]}
+          ingredients={ingredients}
+          onClose={() => setOpenIndex(null)}
+        />
+      )}
+    </main>
   );
-};
-
-export default RecipePage;
+}

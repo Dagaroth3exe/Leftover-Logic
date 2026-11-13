@@ -1,22 +1,17 @@
-import { useState } from 'react'
-import './App.css'
-import { Routes, Route } from 'react-router-dom'
-import Landing from './Pages/Landing'
-import RecipePage from './Pages/RecipePage'
-import RecipeRed from './Components/RecipeRed'
+import { Navigate, Route, Routes } from "react-router-dom";
+import Landing from "./Pages/Landing";
+import RecipePage from "./Pages/RecipePage";
+import WelcomeCard from "./Components/WelcomeCard";
 
-function App() {
-  const [count, setCount] = useState(0)
-
+export default function App() {
   return (
     <>
       <Routes>
         <Route path="/" element={<Landing />} />
-        <Route path="/Recipe" element={<RecipePage/>}/>
-        <Route path="/Red" element={<RecipeRed/>}/>
+        <Route path="/recipes" element={<RecipePage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      <WelcomeCard />
     </>
-  )
+  );
 }
-
-export default App

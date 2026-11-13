@@ -1,82 +1,62 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const { cleanIngredients, generateRecipes, MODELS } = require("./recipes");
 
 const app = express();
 
 app.use(cors());
-app.use(express.json());
-
-// Initialize Gemini
-// Ensure your .env file has GEMINI_API_KEY=...
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+app.use(express.json({ limit: "10kb" }));
 
 app.get("/", (req, res) => {
   res.send("Backend is running 🚀");
 });
 
-// 👇 THE FIXED ENDPOINT (Handles Gemini's response safely)
-app.post("/api/generate", async (req, res) => {
-  const { ingredients } = req.body;
+// Cheap endpoint the frontend pings on page load to wake a sleeping
+// free-tier instance before the user asks for recipes.
+app.get("/api/health", (req, res) => {
+  res.json({ ok: true });
+});
 
-  if (!ingredients || ingredients.length === 0) {
+app.post("/api/generate", async (req, res) => {
+  const ingredients = cleanIngredients(req.body?.ingredients);
+  if (ingredients.length === 0) {
     return res.status(400).json({ error: "No ingredients provided" });
   }
 
+  const started = Date.now();
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-
-    const prompt = `
-      I have these leftovers: ${ingredients.join(", ")}.
-      Create 3 creative recipes using these ingredients: 
-      1. An Indian dish
-      2. An Italian dish
-      3. A Chinese dish
-      
-      You can assume I have basic pantry staples (oil, salt, pepper, water).
-      
-      IMPORTANT: Return the response ONLY as a valid JSON array of objects. 
-      The structure must be:
-      [
-        {
-          "title": "Recipe Name",
-          "description": "Short description",
-          "instructions": "Brief instructions"
-        }
-      ]
-    `;
-
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    let text = response.text();
-
-    console.log("Gemini Raw Output:", text); // Debug log to see what Gemini actually sent
-
-    // ROBUST CLEANUP: Find the JSON array inside the text
-    const firstBracket = text.indexOf("[");
-    const lastBracket = text.lastIndexOf("]");
-    
-    if (firstBracket !== -1 && lastBracket !== -1) {
-      text = text.substring(firstBracket, lastBracket + 1);
-    } else {
-      throw new Error("No JSON array found in Gemini response");
-    }
-
-    const recipes = JSON.parse(text);
+    const recipes = await generateRecipes(ingredients);
+    console.log(`Generated recipes for [${ingredients.join(", ")}] in ${Date.now() - started}ms`);
     res.json({ recipes });
-
   } catch (error) {
-    console.error("Server Error:", error);
-    res.status(500).json({ error: "Failed to generate recipes", details: error.message });
+    const reason = error.status ? `HTTP ${error.status}` : error.message;
+    console.error(`Generation failed after ${Date.now() - started}ms: ${reason}`);
+    if (error.status === 429) {
+      console.error("  Gemini quota hit. Free tier limits: https://aistudio.google.com/docs/rate-limits");
+    }
+    if (error.code === "NO_API_KEY") {
+      return res.status(500).json({ error: "The server has no Gemini API key configured yet." });
+    }
+    if (error.status === 401 || error.status === 403) {
+      return res.status(500).json({ error: "The server's Gemini API key was rejected." });
+    }
+    if (error.status === 429 || error.status === 503) {
+      return res
+        .status(429)
+        .json({ error: "The kitchen is busy right now. Give it a minute and try again." });
+    }
+    res.status(502).json({ error: "Failed to generate recipes" });
   }
 });
 
-// 👇 THIS WAS LIKELY MISSING
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`✅ Backend running at http://localhost:${PORT}`);
+  console.log(`✅ Backend running at http://localhost:${PORT} (models: ${MODELS.join(" → ")})`);
+  if (!process.env.GEMINI_API_KEY) {
+    console.warn("⚠️  GEMINI_API_KEY is not set: /api/generate will fail. Add it to backend/.env");
+  }
 });
 
-// ⭐️ CRITICAL FOR VERCEL: Export the app
+// Vercel imports the app instead of running listen().
 module.exports = app;
