@@ -26,7 +26,9 @@ export async function fetchRecipes(ingredients, signal) {
   }
   const data = await res.json().catch(() => ({}));
   if (!res.ok || !Array.isArray(data.recipes) || data.recipes.length === 0) {
-    throw new Error(data.error || "The chef came back empty-handed.");
+    const err = new Error(data.error || "The chef came back empty-handed.");
+    err.code = data.code; // e.g. "quota" when Gemini's API limit is hit
+    throw err;
   }
   return data.recipes;
 }

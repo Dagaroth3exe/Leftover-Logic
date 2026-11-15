@@ -78,6 +78,15 @@
   }
 }
 
+/* Sleepy "zzz" on the API-limit screen. */
+.snooze {
+  animation: snooze 2.6s ease-in-out infinite;
+}
+@keyframes snooze {
+  0%, 100% { opacity: 0.35; transform: translateY(4px) rotate(-4deg); }
+  50% { opacity: 1; transform: translateY(-6px) rotate(4deg); }
+}
+
 /* ---------- Dish illustrations (src/Components/DishArt.jsx) ---------- */
 
 .art-steam {

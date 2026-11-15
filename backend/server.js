@@ -41,10 +41,17 @@ app.post("/api/generate", async (req, res) => {
     if (error.status === 401 || error.status === 403) {
       return res.status(500).json({ error: "The server's Gemini API key was rejected." });
     }
-    if (error.status === 429 || error.status === 503) {
+    // Quota (429) and overload (503) get distinct codes so the UI can say the right thing.
+    if (error.status === 429) {
+      return res.status(429).json({
+        code: "quota",
+        error: "Gemini has hit its limit for now. Try again in a bit and it might just work :)",
+      });
+    }
+    if (error.status === 503) {
       return res
-        .status(429)
-        .json({ error: "The kitchen is busy right now. Give it a minute and try again." });
+        .status(503)
+        .json({ code: "busy", error: "The kitchen is busy right now. Give it a minute and try again." });
     }
     res.status(502).json({ error: "Failed to generate recipes" });
   }
