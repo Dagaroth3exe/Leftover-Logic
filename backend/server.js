@@ -45,7 +45,7 @@ app.post("/api/generate", async (req, res) => {
     if (error.status === 429) {
       return res.status(429).json({
         code: "quota",
-        error: "Gemini has hit its limit for now. Try again in a bit and it might just work :)",
+        error: "My creator's broke. No API tokens, just free-tier dreams. 💀🥲 Try later!",
       });
     }
     if (error.status === 503) {
@@ -57,7 +57,7 @@ app.post("/api/generate", async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001; // matches the proxy in vite.config.js
 app.listen(PORT, () => {
   console.log(`✅ Backend running at http://localhost:${PORT} (models: ${MODELS.join(" → ")})`);
   if (!process.env.GEMINI_API_KEY) {
